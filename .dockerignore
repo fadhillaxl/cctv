@@ -1,0 +1,7 @@
+.DS_Store
+.git
+.gitignore
+*.ts
+*.tmp
+camera-2/*.ts
+camera-1/*.ts

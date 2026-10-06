@@ -1,0 +1,54 @@
+services:
+  # Web Server Nginx (Melayani Dashboard CCTV & HLS Stream)
+  web:
+    image: nginx:alpine
+    container_name: cctv-web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - ./camera-1:/usr/share/nginx/html/camera-1
+      - ./camera-2:/usr/share/nginx/html/camera-2
+    depends_on:
+      - stream-cam1
+      - stream-cam2
+
+  # Streamer FFmpeg untuk Kamera 1 (192.168.123.107)
+  stream-cam1:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamer
+    container_name: cctv-stream-cam1
+    restart: unless-stopped
+    environment:
+      - CAMERA_NAME=Kamera 1 (Depan)
+      - RTSP_URL=${RTSP_URL_CAM1:-rtsp://admin:password@192.168.123.107:554/Streaming/Channels/102}
+      - OUTPUT_DIR=/streams/camera-1
+      - VIDEO_CODEC=${CODEC_CAM1:-libx264}
+      - PRESET=${PRESET_CAM1:-ultrafast}
+      - BITRATE=${BITRATE_CAM1:-1000k}
+      - HLS_TIME=2
+      - HLS_LIST_SIZE=5
+    volumes:
+      - ./camera-1:/streams/camera-1
+
+  # Streamer FFmpeg untuk Kamera 2 (192.168.123.106)
+  stream-cam2:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamer
+    container_name: cctv-stream-cam2
+    restart: unless-stopped
+    environment:
+      - CAMERA_NAME=Kamera 2 (Belakang)
+      - RTSP_URL=${RTSP_URL_CAM2:-rtsp://admin:password@192.168.123.106:554/Streaming/Channels/102}
+      - OUTPUT_DIR=/streams/camera-2
+      - VIDEO_CODEC=${CODEC_CAM2:-libx264}
+      - PRESET=${PRESET_CAM2:-ultrafast}
+      - BITRATE=${BITRATE_CAM2:-1000k}
+      - HLS_TIME=2
+      - HLS_LIST_SIZE=5
+    volumes:
+      - ./camera-2:/streams/camera-2

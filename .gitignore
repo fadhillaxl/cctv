@@ -1,0 +1,26 @@
+# Environment and sensitive secrets
+.env
+.env.local
+*.env
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Live video segments and temporary playlists
+*.ts
+*.m3u8
+*.tmp
+*.m4s
+camera-1/*.ts
+camera-1/*.m3u8
+camera-1/*.tmp
+camera-1/*.m4s
+camera-2/*.ts
+camera-2/*.m3u8
+camera-2/*.tmp
+camera-2/*.m4s
+
+# Log files
+*.log
+logs/
